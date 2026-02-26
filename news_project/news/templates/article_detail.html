@@ -1,1 +1,25 @@
+{% extends 'news/base.html' %}
 
+{% block title %}{{ article.title }} - Новостной портал{% endblock %}
+
+{% block content %}
+<article class="article-detail">
+    <h2>{{ article.title }}</h2>
+    
+    <div class="article-meta">
+        <span class="author">Автор: {{ article.author.get_full_name|default:article.author.username }}</span>
+        <span class="date">Опубликовано: {{ article.created_at|date:"d.m.Y H:i" }}</span>
+        {% if article.updated_at != article.created_at %}
+            <span class="updated">Обновлено: {{ article.updated_at|date:"d.m.Y H:i" }}</span>
+        {% endif %}
+    </div>
+
+    <div class="article-content">
+        {{ article.content|linebreaks }}
+    </div>
+
+    <div class="article-navigation">
+        <a href="{% url 'news:article_list' %}" class="back-link">← Назад к списку новостей</a>
+    </div>
+</article>
+{% endblock %}
