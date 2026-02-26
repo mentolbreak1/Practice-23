@@ -1,1 +1,63 @@
+{% extends 'news/base.html' %}
 
+{% block title %}Главная - Новостной портал{% endblock %}
+
+{% block content %}
+<div class="search-section">
+    <h2>Последние новости</h2>
+    
+    <form method="get" class="search-form">
+        <input 
+            type="text" 
+            name="search" 
+            placeholder="Поиск по заголовку..." 
+            value="{{ search_query }}"
+        >
+        <button type="submit">Найти</button>
+    </form>
+</div>
+
+<div class="articles-list">
+    {% if articles %}
+        {% for article in articles %}
+            <article class="article-preview">
+                <h3>
+                    <a href="{% url 'news:article_detail' article.pk %}">
+                        {{ article.title }}
+                    </a>
+                </h3>
+                <div class="article-meta">
+                    <span class="author">Автор: {{ article.author.get_full_name|default:article.author.username }}</span>
+                    <span class="date">{{ article.created_at|date:"d.m.Y H:i" }}</span>
+                </div>
+                <div class="article-excerpt">
+                    {{ article.content|truncatewords:30 }}
+                </div>
+                <a href="{% url 'news:article_detail' article.pk %}" class="read-more">Читать далее →</a>
+            </article>
+        {% endfor %}
+
+        {% if is_paginated %}
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">&laquo; Первая</a>
+                        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Предыдущая</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Следующая</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">Последняя &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="no-articles">Новостей пока нет.</p>
+    {% endif %}
+</div>
+{% endblock %}
